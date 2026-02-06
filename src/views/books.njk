@@ -49,6 +49,30 @@
     {% endif %}
 
     {% if books and books | length %}
+      {% set tableRows = [] %}
+      {% for book in books %}
+        {% set tableRows = (tableRows.push([
+          {
+            html: '<a href="/books/' ~ book.book_id ~ '" class="govuk-link">' ~ book.title ~ '</a>'
+          },
+          {
+            text: book.authors | join(", ")
+          },
+          {
+            text: book.genre
+          },
+          {
+            text: book.isbn
+          },
+          {
+            text: book.available_copies ~ " of " ~ book.total_copies
+          },
+          {
+            html: '<a href="/books/' ~ book.book_id ~ '" class="govuk-link">View</a>'
+          }
+        ]), tableRows) %}
+      {% endfor %}
+
       {{ govukTable({
         caption: "List of books",
         captionClasses: "govuk-table__caption--l",
@@ -73,31 +97,7 @@
             text: "Action"
           }
         ],
-        rows: [
-          {% for book in books %}
-            [
-              {
-                html: '<a href="/books/' + book.book_id + '" class="govuk-link">' + book.title + '</a>'
-              },
-              {
-                text: book.authors | join(", ")
-              },
-              {
-                text: book.genre
-              },
-              {
-                text: book.isbn
-              },
-              {
-                text: book.available_copies + " of " + book.total_copies
-              },
-              {
-                html: '<a href="/books/' + book.book_id + '" class="govuk-link">View</a>'
-              }
-            ]
-            {% if not loop.last %},{% endif %}
-          {% endfor %}
-        ]
+        rows: tableRows
       }) }}
 
       {% if totalPages > 1 %}

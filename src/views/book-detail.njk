@@ -63,7 +63,7 @@
             },
             value: {
               text: book.available_copies,
-              classes: book.available_copies > 0 ? "govuk-!-text-align-right" : "govuk-!-text-align-right"
+              classes: "govuk-!-text-align-right"
             }
           }
         ]
@@ -75,7 +75,7 @@
       <div class="govuk-button-group govuk-!-margin-top-8">
         {{ govukButton({
           text: "Edit book",
-          href: "/books/" + book.book_id + "/edit"
+          href: "/books/" ~ book.book_id ~ "/edit"
         }) }}
         <button class="govuk-button govuk-button--warning" data-module="govuk-button" id="deleteBtn">
           Delete book
