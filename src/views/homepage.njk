@@ -1,0 +1,29 @@
+{% extends "layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block pageTitle %}The Kainos Library{% endblock %}
+
+{% block pageContent %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">Welcome to the Kainos Library</h1>
+    <p class="govuk-body-l">Manage books, members, and borrowing all in one place.</p>
+    
+    <div class="govuk-!-margin-top-8">
+      <h2 class="govuk-heading-m">Quick actions</h2>
+      <ul class="govuk-list">
+        <li>
+          <a href="/books" class="govuk-link govuk-body">Browse and search books</a>
+        </li>
+        <li>
+          <a href="/members" class="govuk-link govuk-body">View library members</a>
+        </li>
+        <li>
+          <a href="/borrowing" class="govuk-link govuk-body">Track borrowing</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

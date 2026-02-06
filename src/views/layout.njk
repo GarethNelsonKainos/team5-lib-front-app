@@ -1,0 +1,58 @@
+{% extends "govuk/template.njk" %}
+
+{% from "govuk/components/header/macro.njk" import govukHeader %}
+{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+{% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
+
+{% block head %}
+    <link rel="stylesheet" href="/govuk/govuk-frontend.min.css">
+{% endblock %}
+
+{% block header %}
+    {{ govukHeader({
+        serviceName: "The Kainos Library",
+        serviceUrl: "/"
+    }) }}
+{% endblock %}
+
+{% block beforeContent %}
+    {{ govukPhaseBanner({
+        tag: { text: "Beta" },
+        html: 'This is a prototype library website.'
+    }) }}
+{% endblock %}
+
+{% block content %}
+{{ govukServiceNavigation({
+  navigation: [
+    {
+      href: "/members",
+      text: "Members",
+      active: activePage == "members"
+    },
+    {
+      href: "/books",
+      text: "Books",
+      active: activePage == "books"
+    },
+    {
+      href: "/borrowing",
+      text: "Borrowing",
+      active: activePage == "borrowing"
+    }
+  ]
+}) }}
+
+<div class="govuk-width-container">
+  <main class="govuk-main-wrapper" id="main-content" role="main">
+    {% block pageContent %}{% endblock %}
+  </main>
+</div>
+{% endblock %}
+
+{% block bodyEnd %}
+    <script src="/govuk/govuk-frontend.min.js"></script>
+    <script>
+        window.GOVUKFrontend.initAll();
+    </script>
+{% endblock %}
