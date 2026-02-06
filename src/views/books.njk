@@ -8,22 +8,7 @@
 
 {% block pageContent %}
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-third">
-    <h2 class="govuk-heading-m">Search books</h2>
-    <form method="get" action="/books" class="govuk-!-margin-bottom-6">
-      {{ govukInput({
-        label: {
-          text: "Title or author"
-        },
-        id: "q",
-        name: "q",
-        value: searchQuery
-      }) }}
-      {{ govukButton({
-        text: "Search"
-      }) }}
-    </form>
-  </div>
+  
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Books</h1>
 

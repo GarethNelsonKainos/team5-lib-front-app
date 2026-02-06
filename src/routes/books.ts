@@ -16,37 +16,17 @@ type Book = {
 };
 
 router.get('/', async (req: Request, res: Response) => {
-  const searchQuery = req.query.q as string | undefined;
-
   try {
-    const response = await fetch(booksApiUrl, {
-      headers: {
-        accept: 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Books API request failed with status ${response.status}`);
-    }
-
-    const payload = await response.json();
-    const books: Book[] = payload?.success && Array.isArray(payload.data) ? payload.data : [];
+    const response = await fetch(booksApiUrl);
+    const books: Book[] = await response.json();
 
     res.render('books', {
       activePage: 'books',
       books,
-      searchQuery: searchQuery || '',
-      apiError: null,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown API error';
-
-    res.render('books', {
-      activePage: 'books',
-      books: [],
-      searchQuery: searchQuery || '',
-      apiError: message,
-    });
+    console.error('Error fetching books:', error);
+    res.status(500).send('Error fetching books');
   }
 });
 
