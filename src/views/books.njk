@@ -2,95 +2,143 @@
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
 
 {% block pageTitle %}Books - The Kainos Library{% endblock %}
 
 {% block pageContent %}
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-third">
-    <h2 class="govuk-heading-m">Search books</h2>
-    <form method="get" action="/books" class="govuk-!-margin-bottom-6">
-      {{ govukInput({
-        label: {
-          text: "Title or author"
-        },
-        id: "q",
-        name: "q",
-        value: searchQuery
-      }) }}
-      {{ govukButton({
-        text: "Search"
-      }) }}
-    </form>
-  </div>
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-full">
     <h1 class="govuk-heading-l">Books</h1>
+
+    <form method="get" action="/books" class="govuk-!-margin-bottom-6">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+          {{ govukInput({
+            label: {
+              text: "Search by title or author"
+            },
+            id: "q",
+            name: "q",
+            value: searchQuery,
+            classes: "govuk-!-margin-bottom-0"
+          }) }}
+        </div>
+        <div class="govuk-grid-column-one-quarter">
+          <select class="govuk-select" id="sort" name="sort">
+            <option value="">Sort by</option>
+            <option value="title" {% if sortBy == "title" %}selected{% endif %}>Title (A-Z)</option>
+            <option value="author" {% if sortBy == "author" %}selected{% endif %}>Author (A-Z)</option>
+            <option value="published" {% if sortBy == "published" %}selected{% endif %}>Publication year</option>
+            <option value="availability" {% if sortBy == "availability" %}selected{% endif %}>Availability</option>
+          </select>
+        </div>
+        <div class="govuk-grid-column-one-quarter">
+          {{ govukButton({
+            text: "Search",
+            type: "submit",
+            classes: "govuk-!-margin-top-4"
+          }) }}
+        </div>
+      </div>
+    </form>
 
     {% if apiError %}
       <div class="govuk-inset-text">We could not load books: {{ apiError }}</div>
     {% endif %}
 
     {% if books and books | length %}
-      {% for book in books %}
-        <h3 class="govuk-heading-s">{{ book.title }}</h3>
-        <p class="govuk-body">{{ book.description }}</p>
-        {{ govukSummaryList({
-          rows: [
-            {
-              key: {
-                text: "Author"
+      {{ govukTable({
+        caption: "List of books",
+        captionClasses: "govuk-table__caption--l",
+        firstCellIsHeader: false,
+        head: [
+          {
+            text: "Title"
+          },
+          {
+            text: "Author"
+          },
+          {
+            text: "Genre"
+          },
+          {
+            text: "ISBN"
+          },
+          {
+            text: "Available"
+          },
+          {
+            text: "Action"
+          }
+        ],
+        rows: [
+          {% for book in books %}
+            [
+              {
+                html: '<a href="/books/' + book.book_id + '" class="govuk-link">' + book.title + '</a>'
               },
-              value: {
+              {
                 text: book.authors | join(", ")
-              }
-            },
-            {
-              key: {
-                text: "Genre"
               },
-              value: {
+              {
                 text: book.genre
-              }
-            },
-            {
-              key: {
-                text: "ISBN"
               },
-              value: {
+              {
                 text: book.isbn
-              }
-            },
-            {
-              key: {
-                text: "Publication year"
               },
-              value: {
-                text: book.publication_year
-              }
-            },
-            {
-              key: {
-                text: "Total copies"
+              {
+                text: book.available_copies + " of " + book.total_copies
               },
-              value: {
-                text: book.total_copies
+              {
+                html: '<a href="/books/' + book.book_id + '" class="govuk-link">View</a>'
               }
-            },
-            {
-              key: {
-                text: "Available copies"
-              },
-              value: {
-                text: book.available_copies
-              }
-            }
-          ]
-        }) }}
-        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-      {% endfor %}
+            ]
+            {% if not loop.last %},{% endif %}
+          {% endfor %}
+        ]
+      }) }}
+
+      {% if totalPages > 1 %}
+        <nav class="govuk-pagination" role="navigation" aria-label="Pagination">
+          {% if currentPage > 1 %}
+            <div class="govuk-pagination__prev">
+              <a class="govuk-link govuk-pagination__link" href="/books?q={{ searchQuery }}&sort={{ sortBy }}&page={{ currentPage - 1 }}" rel="prev">
+                <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                  <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
+                </svg>
+                <span class="govuk-pagination__link-title">Previous</span>
+              </a>
+            </div>
+          {% endif %}
+
+          <ul class="govuk-pagination__list">
+            {% for i in range(1, totalPages + 1) %}
+              <li class="govuk-pagination__item {% if currentPage == i %}govuk-pagination__item--current{% endif %}">
+                {% if currentPage == i %}
+                  <span class="govuk-pagination__link-label" aria-current="page">{{ i }}</span>
+                {% else %}
+                  <a class="govuk-link govuk-pagination__link" href="/books?q={{ searchQuery }}&sort={{ sortBy }}&page={{ i }}" aria-label="Page {{ i }}">{{ i }}</a>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+
+          {% if currentPage < totalPages %}
+            <div class="govuk-pagination__next">
+              <a class="govuk-link govuk-pagination__link" href="/books?q={{ searchQuery }}&sort={{ sortBy }}&page={{ currentPage + 1 }}" rel="next">
+                <span class="govuk-pagination__link-title">Next</span>
+                <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                  <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
+                </svg>
+              </a>
+            </div>
+          {% endif %}
+        </nav>
+      {% endif %}
     {% else %}
-      <p class="govuk-body">No books to display.</p>
+      <p class="govuk-body">No books found.</p>
     {% endif %}
   </div>
 </div>

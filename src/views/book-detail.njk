@@ -1,0 +1,117 @@
+{% extends "layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% block pageTitle %}{{ book.title }} - The Kainos Library{% endblock %}
+
+{% block pageContent %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <a href="/books" class="govuk-back-link">Back to books</a>
+    
+    <h1 class="govuk-heading-l">{{ book.title }}</h1>
+
+    {% if apiError %}
+      <div class="govuk-inset-text">Error loading book: {{ apiError }}</div>
+    {% else %}
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Author"
+            },
+            value: {
+              text: book.authors | join(", ")
+            }
+          },
+          {
+            key: {
+              text: "Genre"
+            },
+            value: {
+              text: book.genre
+            }
+          },
+          {
+            key: {
+              text: "ISBN"
+            },
+            value: {
+              text: book.isbn
+            }
+          },
+          {
+            key: {
+              text: "Publication year"
+            },
+            value: {
+              text: book.publication_year
+            }
+          },
+          {
+            key: {
+              text: "Total copies"
+            },
+            value: {
+              text: book.total_copies
+            }
+          },
+          {
+            key: {
+              text: "Available copies"
+            },
+            value: {
+              text: book.available_copies,
+              classes: book.available_copies > 0 ? "govuk-!-text-align-right" : "govuk-!-text-align-right"
+            }
+          }
+        ]
+      }) }}
+
+      <h2 class="govuk-heading-m govuk-!-margin-top-8">Description</h2>
+      <p class="govuk-body">{{ book.description }}</p>
+
+      <div class="govuk-button-group govuk-!-margin-top-8">
+        {{ govukButton({
+          text: "Edit book",
+          href: "/books/" + book.book_id + "/edit"
+        }) }}
+        <button class="govuk-button govuk-button--warning" data-module="govuk-button" id="deleteBtn">
+          Delete book
+        </button>
+      </div>
+
+      <!-- Delete confirmation modal -->
+      <div class="govuk-modal" id="deleteModal" style="display: none;">
+        <div class="govuk-modal__content">
+          <h2 class="govuk-heading-m">Are you sure?</h2>
+          <p class="govuk-body">Deleting <strong>{{ book.title }}</strong> cannot be undone.</p>
+          <div class="govuk-button-group">
+            <form method="post" action="/books/{{ book.book_id }}/delete" style="display: inline;">
+              {{ govukButton({
+                text: "Delete",
+                type: "submit"
+              }) }}
+            </form>
+            {{ govukButton({
+              text: "Cancel",
+              classes: "govuk-button--secondary",
+              id: "cancelDeleteBtn"
+            }) }}
+          </div>
+        </div>
+      </div>
+
+      <script>
+        document.getElementById('deleteBtn')?.addEventListener('click', function() {
+          document.getElementById('deleteModal').style.display = 'block';
+        });
+        document.getElementById('cancelDeleteBtn')?.addEventListener('click', function() {
+          document.getElementById('deleteModal').style.display = 'none';
+        });
+      </script>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

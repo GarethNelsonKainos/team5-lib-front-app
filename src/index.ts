@@ -31,6 +31,10 @@ const nunjucksEnv = nunjucks.configure(
 );
 nunjucksEnv.addGlobal('govukRebrand', true);
 
+// Middleware
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 // Routes
 app.get('/', (req: Request, res: Response) => {
   res.render('homepage');

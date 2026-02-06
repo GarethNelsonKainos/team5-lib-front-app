@@ -1,0 +1,127 @@
+{% extends "layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+
+{% block pageTitle %}Edit Book - The Kainos Library{% endblock %}
+
+{% block pageContent %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <a href="/books/{{ book.book_id }}" class="govuk-back-link">Back to book</a>
+    
+    <h1 class="govuk-heading-l">Edit book</h1>
+
+    {% if error %}
+      <div class="govuk-error-summary" data-module="govuk-error-summary">
+        <div class="govuk-error-summary__body">
+          <ul class="govuk-list govuk-error-summary__list">
+            <li>{{ error }}</li>
+          </ul>
+        </div>
+      </div>
+    {% endif %}
+
+    <form method="post" action="/books/{{ book.book_id }}/update">
+      {{ govukInput({
+        label: {
+          text: "Title"
+        },
+        id: "title",
+        name: "title",
+        value: book.title,
+        required: true
+      }) }}
+
+      {{ govukInput({
+        label: {
+          text: "Author"
+        },
+        id: "authors",
+        name: "authors",
+        value: book.authors | join(", "),
+        hint: {
+          text: "Separate multiple authors with commas"
+        },
+        required: true
+      }) }}
+
+      {{ govukInput({
+        label: {
+          text: "Genre"
+        },
+        id: "genre",
+        name: "genre",
+        value: book.genre,
+        required: true
+      }) }}
+
+      {{ govukInput({
+        label: {
+          text: "ISBN"
+        },
+        id: "isbn",
+        name: "isbn",
+        value: book.isbn,
+        required: true
+      }) }}
+
+      {{ govukInput({
+        label: {
+          text: "Publication year"
+        },
+        id: "publication_year",
+        name: "publication_year",
+        type: "number",
+        value: book.publication_year,
+        required: true
+      }) }}
+
+      {{ govukInput({
+        label: {
+          text: "Total copies"
+        },
+        id: "total_copies",
+        name: "total_copies",
+        type: "number",
+        value: book.total_copies,
+        required: true
+      }) }}
+
+      {{ govukInput({
+        label: {
+          text: "Available copies"
+        },
+        id: "available_copies",
+        name: "available_copies",
+        type: "number",
+        value: book.available_copies,
+        required: true
+      }) }}
+
+      {{ govukTextarea({
+        label: {
+          text: "Description"
+        },
+        id: "description",
+        name: "description",
+        value: book.description,
+        rows: 6
+      }) }}
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Save changes",
+          type: "submit"
+        }) }}
+        {{ govukButton({
+          text: "Cancel",
+          href: "/books/" + book.book_id,
+          classes: "govuk-button--secondary"
+        }) }}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
