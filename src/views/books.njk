@@ -1,0 +1,97 @@
+{% extends "layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% block pageTitle %}Books - The Kainos Library{% endblock %}
+
+{% block pageContent %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m">Search books</h2>
+    <form method="get" action="/books" class="govuk-!-margin-bottom-6">
+      {{ govukInput({
+        label: {
+          text: "Title or author"
+        },
+        id: "q",
+        name: "q",
+        value: searchQuery
+      }) }}
+      {{ govukButton({
+        text: "Search"
+      }) }}
+    </form>
+  </div>
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Books</h1>
+
+    {% if apiError %}
+      <div class="govuk-inset-text">We could not load books: {{ apiError }}</div>
+    {% endif %}
+
+    {% if books and books | length %}
+      {% for book in books %}
+        <h3 class="govuk-heading-s">{{ book.title }}</h3>
+        <p class="govuk-body">{{ book.description }}</p>
+        {{ govukSummaryList({
+          rows: [
+            {
+              key: {
+                text: "Author"
+              },
+              value: {
+                text: book.authors | join(", ")
+              }
+            },
+            {
+              key: {
+                text: "Genre"
+              },
+              value: {
+                text: book.genre
+              }
+            },
+            {
+              key: {
+                text: "ISBN"
+              },
+              value: {
+                text: book.isbn
+              }
+            },
+            {
+              key: {
+                text: "Publication year"
+              },
+              value: {
+                text: book.publication_year
+              }
+            },
+            {
+              key: {
+                text: "Total copies"
+              },
+              value: {
+                text: book.total_copies
+              }
+            },
+            {
+              key: {
+                text: "Available copies"
+              },
+              value: {
+                text: book.available_copies
+              }
+            }
+          ]
+        }) }}
+        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+      {% endfor %}
+    {% else %}
+      <p class="govuk-body">No books to display.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
